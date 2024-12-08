@@ -18,15 +18,18 @@ class _ProfileState extends State<Profile> {
   late TextEditingController _emailController;
   late TextEditingController _usernameController;
 
+  late UserModel currentUser;
+
   late final AuthService _authService;
 
   @override
   void initState() {
     super.initState();
+    currentUser = widget.user;
     _authService = Provider.of<AuthService>(context, listen: false);
-    _nameController = TextEditingController(text: widget.user.name);
-    _emailController = TextEditingController(text: widget.user.email);
-    _usernameController = TextEditingController(text: widget.user.username);
+    _nameController = TextEditingController(text: currentUser.name);
+    _emailController = TextEditingController(text: currentUser.email);
+    _usernameController = TextEditingController(text: currentUser.username);
   }
 
   @override
@@ -46,12 +49,26 @@ class _ProfileState extends State<Profile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'Personal Information',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                //refresh button
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    _nameController.text = currentUser.name;
+                    _emailController.text = currentUser.email;
+                    _usernameController.text = currentUser.username;
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -113,10 +130,10 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Role: ${widget.user.role}'),
+                    Text('Role: ${currentUser.role}'),
                     const SizedBox(height: 8),
                     Text(
-                        'Status: ${widget.user.isActive ? "Active" : "Inactive"}'),
+                        'Status: ${currentUser.isActive ? "Active" : "Inactive"}'),
                     // Add additional mentee-specific fields here
                   ],
                 ),
@@ -142,6 +159,12 @@ class _ProfileState extends State<Profile> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Profile updated')),
                     );
+                    setState(() {
+                      currentUser = updatedUser;
+                      _nameController.text = updatedUser.name;
+                      _emailController.text = updatedUser.email;
+                      _usernameController.text = updatedUser.username;
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(

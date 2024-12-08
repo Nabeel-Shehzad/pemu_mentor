@@ -286,4 +286,8 @@ class AuthService extends ChangeNotifier {
       );
     }
   }
+
+  void refreshUser () {
+    notifyListeners();
+  }
 }
